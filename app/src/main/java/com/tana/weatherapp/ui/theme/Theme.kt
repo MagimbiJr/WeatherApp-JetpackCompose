@@ -27,6 +27,15 @@ private val LightColorPalette = lightColors(
     */
 )
 
+val CustomColorPalette = lightColors(
+    background = CustomBackgroundColor,
+    secondary = ActiveColor,
+    onBackground = PrimaryTextColor,
+    onPrimary = PrimaryTextColor,
+    surface = CustomSurfaceBackground,
+    onSurface = PrimaryTextColor
+)
+
 @Composable
 fun WeatherAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
     val colors = if (darkTheme) {
@@ -35,6 +44,17 @@ fun WeatherAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
         LightColorPalette
     }
 
+    MaterialTheme(
+        colors = colors,
+        typography = Typography,
+        shapes = Shapes,
+        content = content
+    )
+}
+
+@Composable
+fun WeatherCustomTheme(content: @Composable () -> Unit) {
+    val colors = CustomColorPalette
     MaterialTheme(
         colors = colors,
         typography = Typography,
