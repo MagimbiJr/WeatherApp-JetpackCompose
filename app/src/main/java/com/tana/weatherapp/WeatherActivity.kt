@@ -11,7 +11,9 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.tana.weatherapp.components.WeatherBottomNav
 import com.tana.weatherapp.screens.WeatherScreen
 import com.tana.weatherapp.ui.theme.CustomBackgroundColor
 import com.tana.weatherapp.ui.theme.CustomSurfaceBackground
@@ -32,14 +34,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             val weather = viewModel.weatherData.value
             val dayForecast = viewModel.dayForecast.value
+            val navHostController = rememberNavController()
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(CustomBackgroundColor)
             systemUiController.setStatusBarColor(CustomSurfaceBackground)
             WeatherCustomTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    WeatherScreen(
-                        currentWeather = weather,
+                    WeatherNavGraph(
+                        navHostController = navHostController,
+                        currentWeatherData = weather,
                         dayForecast = dayForecast,
                         viewModel = viewModel
                     )
