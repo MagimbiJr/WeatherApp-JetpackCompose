@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tana.weatherapp.components.WeatherBottomNav
+import com.tana.weatherapp.screens.ForecastsScreen
 import com.tana.weatherapp.screens.WeatherScreen
 import com.tana.weatherapp.ui.theme.CustomBackgroundColor
 import com.tana.weatherapp.ui.theme.CustomSurfaceBackground
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val weather = viewModel.weatherData.value
             val dayForecast = viewModel.dayForecast.value
+            val forecasts = viewModel.forecasts.value
             val navHostController = rememberNavController()
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(CustomBackgroundColor)
@@ -45,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         navHostController = navHostController,
                         currentWeatherData = weather,
                         dayForecast = dayForecast,
+                        forecasts = forecasts,
                         viewModel = viewModel
                     )
                 }

@@ -11,18 +11,22 @@ class WeatherViewModel : ViewModel() {
 
     val weatherData: MutableState<CurrentWeatherData> = mutableStateOf( CurrentWeatherData() )
     val dayForecast: MutableState<CurrentDayForecast> = mutableStateOf( CurrentDayForecast() )
+    val forecasts: MutableState<Forecasts> = mutableStateOf(Forecasts())
     var loading = false
     var cardToggle = mutableStateOf(true)
     init {
         viewModelScope.launch {
             loading = true
-            val currentWeatherDataResult = WeatherRepository.getCurrentWeather()
 
-            Log.d("Fun not allowed here", "${weatherData.value}")
+            val currentWeatherDataResult = WeatherRepository.getCurrentWeather()
             weatherData.value = currentWeatherDataResult
 
             val dayForecastResult = WeatherRepository.getDayForeCast()
             dayForecast.value = dayForecastResult
+
+            val forecastsResult = WeatherRepository.getForecasts()
+            forecasts.value = forecastsResult
+
             loading = false
         }
     }

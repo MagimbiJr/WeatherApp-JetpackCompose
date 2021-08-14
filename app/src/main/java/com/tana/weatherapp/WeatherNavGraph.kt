@@ -11,6 +11,7 @@ import com.tana.weatherapp.components.NavigationItem
 import com.tana.weatherapp.components.WeatherBottomNav
 import com.tana.weatherapp.data.CurrentDayForecast
 import com.tana.weatherapp.data.CurrentWeatherData
+import com.tana.weatherapp.data.Forecasts
 import com.tana.weatherapp.screens.ForecastsScreen
 import com.tana.weatherapp.screens.SearchScreen
 import com.tana.weatherapp.screens.SettingsScreen
@@ -23,6 +24,7 @@ fun WeatherNavGraph(
     navHostController: NavHostController,
     currentWeatherData: CurrentWeatherData,
     dayForecast: CurrentDayForecast,
+    forecasts: Forecasts,
     viewModel: WeatherViewModel
 ) {
     Scaffold(
@@ -33,11 +35,16 @@ fun WeatherNavGraph(
                 WeatherScreen(
                     currentWeather = currentWeatherData,
                     dayForecast = dayForecast,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    navHostController = navHostController
                 )
             }
             composable(NavigationItem.Forecasts.route) {
-                ForecastsScreen()
+                ForecastsScreen(
+                    currentDayForecast = dayForecast,
+                    forecast = forecasts,
+                    viewModel = viewModel
+                )
             }
             composable(NavigationItem.Search.route) {
                 SearchScreen()
