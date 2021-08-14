@@ -12,6 +12,8 @@ data class DayForecast(
 )
 
 data class ForecastDay(
+    @SerializedName("date_epoch")
+    val date: Long? = null,
     val hour: List<Hour>? = null
 )
 

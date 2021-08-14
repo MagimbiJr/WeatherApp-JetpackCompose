@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.tana.weatherapp.components.NavigationItem
 import com.tana.weatherapp.data.CurrentWeatherData
 import com.tana.weatherapp.data.CurrentDayForecast
 import com.tana.weatherapp.ui.theme.SecondaryTextColor
@@ -43,6 +45,7 @@ fun WeatherScreen(
     currentWeather: CurrentWeatherData,
     dayForecast: CurrentDayForecast,
     viewModel: WeatherViewModel,
+    navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     var isCardSelected = viewModel.cardToggle.value
@@ -82,7 +85,11 @@ fun WeatherScreen(
             Spacer(modifier = modifier.padding(5.dp))
             WeatherInfo(currentWeather = currentWeather, modifier = modifier)
             Spacer(modifier = modifier.padding(15.dp))
-            DayForecast(dayForecast = dayForecast, modifier = modifier)
+            DayForecast(
+                dayForecast = dayForecast,
+                navHostController = navHostController,
+                modifier = modifier
+            )
         }
     }
 }
@@ -105,6 +112,7 @@ fun ScreenLoading(modifier: Modifier) {
 @Composable
 fun DayForecast(
     dayForecast: CurrentDayForecast,
+    navHostController: NavHostController,
     modifier: Modifier
 ) {
     Column() {
@@ -122,7 +130,7 @@ fun DayForecast(
                 text = "View full report",
                 style = MaterialTheme.typography.body1,
                 color = TextLinkColor,
-                modifier = modifier.clickable {  }
+                modifier = modifier.clickable { navHostController.navigate(NavigationItem.Forecasts.route) }
             )
         }
         Spacer(modifier = modifier.padding(12.dp))
@@ -152,7 +160,6 @@ fun DayForecastList(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             hour.condition?.icon?.let { iconUrl ->
-                                Log.d("TAG UBAVU", "DayForecastList: $iconUrl")
 
                                 val painter = rememberImagePainter(data = "https:$iconUrl")
                                 Image(
@@ -175,7 +182,6 @@ fun DayForecastList(
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    Log.d("TAG UBAVU", "DayForecastList: $formatedTime")
                                 }
                                 Spacer(modifier = modifier.padding(2.dp))
                                 hour.temp?.let { temp ->
@@ -275,7 +281,6 @@ fun WeatherInfo(currentWeather: CurrentWeatherData, modifier: Modifier) {
 @Composable
 fun WeatherImage(currentWeather: CurrentWeatherData, modifier: Modifier) {
     currentWeather.current?.condition?.icon?.let { icon ->
-        Log.d("TAG La Weather", "WeatherImage: $icon")
         Image(
             painter = rememberImagePainter(data = "https:$icon"),
             contentDescription = null,

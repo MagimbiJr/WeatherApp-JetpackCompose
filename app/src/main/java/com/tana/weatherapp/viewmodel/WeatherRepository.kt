@@ -1,9 +1,6 @@
 package com.tana.weatherapp.viewmodel
 
-import com.tana.weatherapp.data.CurrentDayForecast
-import com.tana.weatherapp.data.CurrentWeatherData
-import com.tana.weatherapp.data.DayForecast
-import com.tana.weatherapp.data.ForecastDay
+import com.tana.weatherapp.data.*
 import com.tana.weatherapp.retrofit.WeatherClient
 
 object WeatherRepository {
@@ -13,5 +10,9 @@ object WeatherRepository {
 
     suspend fun getDayForeCast() : CurrentDayForecast {
         return WeatherClient.weatherService().getDayForecast()
+    }
+
+    suspend fun getForecasts() : Forecasts {
+        return WeatherClient.weatherService().getForecasts()
     }
 }
