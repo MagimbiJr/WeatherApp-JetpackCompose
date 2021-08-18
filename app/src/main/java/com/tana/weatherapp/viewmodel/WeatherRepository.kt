@@ -4,15 +4,15 @@ import com.tana.weatherapp.data.*
 import com.tana.weatherapp.retrofit.WeatherClient
 
 object WeatherRepository {
-    suspend fun getCurrentWeather(): CurrentWeatherData {
-        return WeatherClient.weatherService().getCurrentWeather()
+    suspend fun getCurrentWeather(location: String): CurrentWeatherData {
+        return WeatherClient.weatherService().getCurrentWeather(location = location)
     }
 
-    suspend fun getDayForeCast() : CurrentDayForecast {
-        return WeatherClient.weatherService().getDayForecast()
+    suspend fun getDayForeCast(location: String) : CurrentDayForecast {
+        return WeatherClient.weatherService().getDayForecast(location = location)
     }
 
-    suspend fun getForecasts() : Forecasts {
-        return WeatherClient.weatherService().getForecasts()
+    suspend fun getForecasts(location: String) : Forecasts {
+        return WeatherClient.weatherService().getForecasts(location = location)
     }
 }
