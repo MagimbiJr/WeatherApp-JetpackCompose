@@ -1,7 +1,6 @@
 package com.tana.weatherapp.screens
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -11,19 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CalendarViewDay
-import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.tana.weatherapp.data.CurrentDayForecast
-import com.tana.weatherapp.data.Forecasts
-import com.tana.weatherapp.data.WeeklyForecast
+import com.tana.weatherapp.components.ScreenLoading
+import com.tana.weatherapp.data.WeatherData
 import com.tana.weatherapp.ui.theme.SecondaryTextColor
 import com.tana.weatherapp.viewmodel.WeatherViewModel
 import java.time.Instant
@@ -32,8 +27,8 @@ import java.time.ZoneId
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForecastsScreen(
-    currentDayForecast: CurrentDayForecast,
-    forecast: Forecasts,
+    //currentDayForecast: CurrentDayForecast,
+    forecast: WeatherData,
     viewModel: WeatherViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -44,7 +39,7 @@ fun ForecastsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.loading) {
-            ScreenLoading(modifier = modifier)
+            ScreenLoading(viewModel = viewModel,modifier = modifier)
         } else {
             Text(
                 text = "Forecasts Report",
@@ -53,7 +48,7 @@ fun ForecastsScreen(
             )
             Spacer(modifier = modifier.padding(15.dp))
             TodayForecast(
-                currentDayForecast = currentDayForecast,
+                currentDayForecast = forecast,
                 modifier = modifier
             )
             Spacer(modifier = modifier.padding(15.dp))
@@ -87,10 +82,10 @@ fun ForecastsScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Forecasts(
-    forecast: Forecasts,
+    forecast: WeatherData,
     modifier: Modifier
 ) {
-    val daysLists = forecast.forecast?.forecastDay
+    val daysLists = forecast.daily
     LazyColumn(
         modifier = modifier.padding(bottom = 40.dp)
     ) {
@@ -111,7 +106,7 @@ fun Forecasts(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Column() {
-                                day.date?.let { epochDate ->
+                                day.epochDate?.let { epochDate ->
                                     val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
                                         .dayOfWeek.plus(1)
                                     Text(
@@ -120,7 +115,7 @@ fun Forecasts(
                                     )
                                 }
                                 Spacer(modifier = modifier.padding(3.dp))
-                                day.date?.let { epochDate ->
+                                day.epochDate?.let { epochDate ->
                                     val month = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
                                         .month.name.slice(0..2)
                                     val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault()).dayOfMonth.plus(1)
@@ -135,7 +130,7 @@ fun Forecasts(
                                 }
                             }
                             Row() {
-                                day.day?.maxTemp.let { maxTemp ->
+                                day.temperature?.day?.let { maxTemp ->
                                     Text(
                                         text = maxTemp.toString(),
                                         style = MaterialTheme.typography.h5,
@@ -145,8 +140,9 @@ fun Forecasts(
                                 }
                                 Text(text = "℃")
                             }
-                            day.day?.condition?.icon?.let { icon ->
-                                val painter = rememberImagePainter(data = "https:$icon")
+                            day.weather[0].icon?.let { icon ->
+//                                val painter = rememberImagePainter(data = "https:$icon")
+                                val painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/$icon@2x.png")
                                 Image(
                                     painter = painter,
                                     contentDescription = null,
@@ -164,7 +160,8 @@ fun Forecasts(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TodayForecast(
-    currentDayForecast: CurrentDayForecast,
+//    currentDayForecast: CurrentDayForecast,
+    currentDayForecast: WeatherData,
     modifier: Modifier
 ) {
     Row(
@@ -178,7 +175,8 @@ fun TodayForecast(
             fontWeight = FontWeight.Bold,
             color = SecondaryTextColor
         )
-        currentDayForecast.forecast?.forecastDay?.get(0)?.date?.let { epochDate ->
+//        currentDayForecast.forecast?.forecastDay?.get(0)?.date?.let { epochDate ->
+            currentDayForecast.daily[0]?.epochDate?.let { epochDate ->
             val month = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
                 .month.name.slice(0..2)
             val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault()).dayOfMonth

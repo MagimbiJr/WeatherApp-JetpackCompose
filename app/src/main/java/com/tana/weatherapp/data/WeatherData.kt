@@ -3,13 +3,9 @@ package com.tana.weatherapp.data
 import com.google.gson.annotations.SerializedName
 
 data class WeatherData(
-    @SerializedName("lat")
-    val latitude: Double? = null,
-    @SerializedName("lon")
-    val longitude: Double? = null,
     val current: Current? = null,
     val hourly: List<Hour> = listOf(),
-    val daily: List<Days>
+    val daily: List<Days> = listOf()
 )
 
 data class Current(
@@ -29,7 +25,7 @@ data class Weather(
 
 data class Hour(
     @SerializedName("dt")
-    val hour: Long? = null,
+    val time: Long? = null,
     @SerializedName("temp")
     val temperature: Double? = null,
     val weather: List<Weather>

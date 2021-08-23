@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val weather = viewModel.weatherData.value
-            val dayForecast = viewModel.dayForecast.value
-            val forecasts = viewModel.forecasts.value
+            //val dayForecast = viewModel.dayForecast.value
+            //val forecasts = viewModel.forecasts.value
             val navHostController = rememberNavController()
             val systemUiController = rememberSystemUiController()
             systemUiController.setSystemBarsColor(CustomBackgroundColor)
@@ -52,8 +52,8 @@ class MainActivity : ComponentActivity() {
                     WeatherNavGraph(
                         navHostController = navHostController,
                         currentWeatherData = weather,
-                        dayForecast = dayForecast,
-                        forecasts = forecasts,
+                        //dayForecast = dayForecast,
+                        forecasts = weather,
                         viewModel = viewModel
                     )
                 }
