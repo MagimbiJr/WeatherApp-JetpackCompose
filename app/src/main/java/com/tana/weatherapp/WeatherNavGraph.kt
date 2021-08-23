@@ -9,10 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.tana.weatherapp.components.NavigationItem
 import com.tana.weatherapp.components.WeatherBottomNav
-import com.tana.weatherapp.data.CurrentDayForecast
-import com.tana.weatherapp.data.CurrentWeatherData
-import com.tana.weatherapp.data.Forecasts
+//import com.tana.weatherapp.data.CurrentDayForecast
+//import com.tana.weatherapp.data.CurrentWeatherData
+import com.tana.weatherapp.data.WeatherData
 import com.tana.weatherapp.screens.ForecastsScreen
+//import com.tana.weatherapp.screens.ForecastsScreen
 import com.tana.weatherapp.screens.SearchScreen
 import com.tana.weatherapp.screens.SettingsScreen
 import com.tana.weatherapp.screens.WeatherScreen
@@ -22,9 +23,11 @@ import com.tana.weatherapp.viewmodel.WeatherViewModel
 @Composable
 fun WeatherNavGraph(
     navHostController: NavHostController,
-    currentWeatherData: CurrentWeatherData,
-    dayForecast: CurrentDayForecast,
-    forecasts: Forecasts,
+    //currentWeatherData: CurrentWeatherData,
+    currentWeatherData: WeatherData,
+    //dayForecast: CurrentDayForecast,
+    //forecasts: Forecasts,
+    forecasts: WeatherData,
     viewModel: WeatherViewModel
 ) {
     Scaffold(
@@ -34,15 +37,15 @@ fun WeatherNavGraph(
             composable(NavigationItem.Home.route) {
                 WeatherScreen(
                     currentWeather = currentWeatherData,
-                    dayForecast = dayForecast,
+//                    dayForecast = currentWeatherData,
                     viewModel = viewModel,
                     navHostController = navHostController
                 )
             }
             composable(NavigationItem.Forecasts.route) {
                 ForecastsScreen(
-                    currentDayForecast = dayForecast,
-                    forecast = forecasts,
+                    //currentDayForecast = currentWeatherData,
+                    forecast = currentWeatherData,
                     viewModel = viewModel
                 )
             }

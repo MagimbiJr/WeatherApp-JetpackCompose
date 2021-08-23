@@ -16,20 +16,25 @@ import com.tana.weatherapp.DEFAULT_UPDATE_INTERVAL
 import com.tana.weatherapp.FAST_UPDATE_INTERVAL
 import com.tana.weatherapp.LOCATION_REQUEST_CODE
 import com.tana.weatherapp.data.DeviceLocation
+import kotlin.properties.Delegates
 
 class LocationRepository(private val context: Context) : LiveData<String>() {
-     val deviceLocation = DeviceLocation()
+    var  latitude = 0.0
+    var longitude = 0.0
+    val deviceLocation = DeviceLocation()
     val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
     private val geocoder = Geocoder(context)
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            value = deviceLocation.getDeviceLocation(
-                locationResult.lastLocation.latitude,
-                locationResult.lastLocation.longitude,
-                geocoder
-            )
+//            value = deviceLocation.getDeviceLocation(
+//                locationResult.lastLocation.latitude,
+//                locationResult.lastLocation.longitude,
+//                geocoder
+//            )
+            latitude = locationResult.lastLocation.latitude
+            longitude = locationResult.lastLocation.longitude
         }
     }
 
@@ -63,11 +68,13 @@ class LocationRepository(private val context: Context) : LiveData<String>() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location ->
-                value = deviceLocation.getDeviceLocation(
-                    location.latitude,
-                    location.longitude,
-                    geocoder
-                )
+//                value = deviceLocation.getDeviceLocation(
+//                    location.latitude,
+//                    location.longitude,
+//                    geocoder
+//                )
+                latitude = location.latitude
+                longitude = location.longitude
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.tana.weatherapp.screens
 
+import android.location.Geocoder
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SignalCellularConnectedNoInternet4Bar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,17 +26,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.tana.weatherapp.WEATHER_SCREEN_TAG
 import com.tana.weatherapp.components.NavigationItem
-import com.tana.weatherapp.data.CurrentWeatherData
-import com.tana.weatherapp.data.CurrentDayForecast
+import com.tana.weatherapp.components.ScreenLoading
+//import com.tana.weatherapp.data.CurrentWeatherData
+//import com.tana.weatherapp.data.CurrentDayForecast
+import com.tana.weatherapp.data.WeatherData
 import com.tana.weatherapp.ui.theme.SecondaryTextColor
 import com.tana.weatherapp.ui.theme.TextLinkColor
 import com.tana.weatherapp.viewmodel.WeatherViewModel
@@ -42,8 +51,9 @@ import java.time.ZoneId
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeatherScreen(
-    currentWeather: CurrentWeatherData,
-    dayForecast: CurrentDayForecast,
+    //currentWeather: CurrentWeatherData,
+    currentWeather: WeatherData,
+    //dayForecast: CurrentDayForecast,
     viewModel: WeatherViewModel,
     navHostController: NavHostController,
     modifier: Modifier = Modifier
@@ -68,9 +78,12 @@ fun WeatherScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.loading) {
-            ScreenLoading(modifier = modifier)
+            ScreenLoading(viewModel = viewModel,modifier = modifier)
         } else {
-            LocationInfo(weatherData = currentWeather, modifier = modifier)
+            LocationInfo(
+                weatherData = currentWeather,
+                viewModel = viewModel,
+                modifier = modifier)
             Spacer(modifier = modifier.padding(15.dp))
             ToggleCards(
                 isCardSelected = isCardSelected,
@@ -86,7 +99,8 @@ fun WeatherScreen(
             WeatherInfo(currentWeather = currentWeather, modifier = modifier)
             Spacer(modifier = modifier.padding(15.dp))
             DayForecast(
-                dayForecast = dayForecast,
+                //dayForecast = dayForecast,
+                dayForecast = currentWeather,
                 navHostController = navHostController,
                 modifier = modifier
             )
@@ -94,24 +108,12 @@ fun WeatherScreen(
     }
 }
 
-@Composable
-fun ScreenLoading(modifier: Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        CircularProgressIndicator(
-            modifier = modifier.size(100.dp),
-            color = MaterialTheme.colors.secondary
-        )
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DayForecast(
-    dayForecast: CurrentDayForecast,
+    //dayForecast: CurrentDayForecast,
+    dayForecast: WeatherData,
     navHostController: NavHostController,
     modifier: Modifier
 ) {
@@ -141,27 +143,36 @@ fun DayForecast(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DayForecastList(
-    forecastDay: CurrentDayForecast,
+    //forecastDay: CurrentDayForecast,
+    forecastDay: WeatherData,
     modifier: Modifier
 ) {
-    val hoursForecast = forecastDay.forecast?.forecastDay
+    //val hoursForecast = forecastDay.forecast?.forecastDay
+    val hoursForecast = forecastDay.hourly
     LazyRow() {
         if (hoursForecast == null) {
-            item { Text(text = "Please wait") }
+
         } else {
-            items(hoursForecast) { 
-                hoursForecast[0].hour?.forEach { hour ->
+            items(hoursForecast) {
+                //hoursForecast[0].hour?.forEach { hour ->
+//                hoursForecast.forEach { hour ->
+                hoursForecast.forEachIndexed { index, hour ->
                     Card(
                         shape = RoundedCornerShape(15.dp),
-                        modifier = modifier.padding(end = 15.dp)
+                        modifier = modifier.padding(end = 15.dp),
+                        backgroundColor = if (index == 0) MaterialTheme.colors.secondary else
+                            MaterialTheme.colors.surface,
+                        contentColor = MaterialTheme.colors.onSurface
                     ) {
                         Row(
                             modifier = modifier.padding(horizontal = 18.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            hour.condition?.icon?.let { iconUrl ->
+                            //hour.condition?.icon?.let { iconUrl ->
+                            hour.weather[0].icon?.let { iconUrl ->
 
-                                val painter = rememberImagePainter(data = "https:$iconUrl")
+                                //val painter = rememberImagePainter(data = "https:$iconUrl")
+                                val painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/$iconUrl@2x.png")
                                 Image(
                                     painter = painter,
                                     //painter = painterResource(id = R.drawable.weather),
@@ -173,6 +184,7 @@ fun DayForecastList(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                //hour.time?.let { timeEpoch ->
                                 hour.time?.let { timeEpoch ->
                                     val formatedTime = Instant.ofEpochSecond(timeEpoch)
                                         .atZone(ZoneId.systemDefault()).toLocalTime()
@@ -184,7 +196,8 @@ fun DayForecastList(
                                     )
                                 }
                                 Spacer(modifier = modifier.padding(2.dp))
-                                hour.temp?.let { temp ->
+                                //hour.temp?.let { temp ->
+                                hour.temperature?.let { temp ->
                                     Row() {
                                         Text(
                                             text = temp.toString(),
@@ -208,7 +221,11 @@ fun DayForecastList(
 }
 
 @Composable
-fun WeatherInfo(currentWeather: CurrentWeatherData, modifier: Modifier) {
+fun WeatherInfo(
+    //currentWeather: CurrentWeatherData,
+    currentWeather: WeatherData,
+    modifier: Modifier
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -222,7 +239,8 @@ fun WeatherInfo(currentWeather: CurrentWeatherData, modifier: Modifier) {
                 color = SecondaryTextColor
             )
             Spacer(modifier = modifier.padding(2.dp))
-            currentWeather.current?.temperature.let { temp ->
+            //currentWeather.current?.temperature.let { temp ->
+            currentWeather.current?.temperature?.let { temp ->
                 Row() {
                     Text(
                         text = "$temp",
@@ -247,7 +265,8 @@ fun WeatherInfo(currentWeather: CurrentWeatherData, modifier: Modifier) {
                 color = SecondaryTextColor
             )
             Spacer(modifier = modifier.padding(2.dp))
-            currentWeather.current?.wind.let { wind ->
+            //currentWeather.current?.wind.let { wind ->
+            currentWeather.current?.windSpeed.let { wind ->
                 Text(
                     text = "$wind km/h",
                     style = TextStyle(
@@ -279,13 +298,20 @@ fun WeatherInfo(currentWeather: CurrentWeatherData, modifier: Modifier) {
 }
 
 @Composable
-fun WeatherImage(currentWeather: CurrentWeatherData, modifier: Modifier) {
-    currentWeather.current?.condition?.icon?.let { icon ->
+fun WeatherImage(
+    //currentWeather: CurrentWeatherData,
+    currentWeather: WeatherData,
+    modifier: Modifier
+) {
+    //currentWeather.current?.condition?.icon?.let { icon ->
+    currentWeather.current?.weather?.get(0)?.icon?.let { icon ->
+        val painter = "https://openweathermap.org/img/wn/$icon@2x.png"
         Image(
-            painter = rememberImagePainter(data = "https:$icon"),
+            //painter = rememberImagePainter(data = "https:$icon"),
+            painter = rememberImagePainter(data = painter),
             contentDescription = null,
-            modifier = modifier.size(250.dp),
-            contentScale = ContentScale.Crop
+            modifier = modifier.size(190.dp),
+            contentScale = ContentScale.FillBounds
         )
     }
 }
@@ -368,16 +394,31 @@ fun CustomCard(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun LocationInfo(weatherData: CurrentWeatherData, modifier: Modifier) {
-    weatherData.location?.name?.let { name ->
-        Text(
-            text = name,
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
-        )
+fun LocationInfo(
+    //weatherData: CurrentWeatherData,
+    weatherData: WeatherData,
+    viewModel: WeatherViewModel,
+    modifier: Modifier
+) {
+    //weatherData.location?.name?.let { name ->
+    weatherData.let {
+        val lat = viewModel.locationRepository.latitude
+        val lon = viewModel.locationRepository.longitude
+        val geocoder = Geocoder(LocalContext.current)
+        val address = geocoder.getFromLocation(lat, lon, 1)
+        val name = address[0].locality
+        if (name != null) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.h4,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+        }
+
     }
     Spacer(modifier = modifier.padding(6.dp))
-    weatherData.location?.localTime?.let { dateEpoch ->
+    weatherData.current?.epochDate?.let { dateEpoch ->
         val month = Instant.ofEpochSecond(dateEpoch)
             .atZone(ZoneId.systemDefault()).toLocalDate().month.name.slice(0..2)
         val day = Instant.ofEpochSecond(dateEpoch)
