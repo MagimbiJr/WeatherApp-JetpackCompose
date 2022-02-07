@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.tana.weatherapp.WEATHER_SCREEN_TAG
 import com.tana.weatherapp.components.NavigationItem
@@ -78,12 +80,13 @@ fun WeatherScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.loading) {
-            ScreenLoading(viewModel = viewModel,modifier = modifier)
+            ScreenLoading(viewModel = viewModel, modifier = modifier)
         } else {
             LocationInfo(
                 weatherData = currentWeather,
                 viewModel = viewModel,
-                modifier = modifier)
+                modifier = modifier
+            )
             Spacer(modifier = modifier.padding(15.dp))
             ToggleCards(
                 isCardSelected = isCardSelected,
@@ -140,6 +143,7 @@ fun DayForecast(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DayForecastList(
@@ -151,65 +155,61 @@ fun DayForecastList(
     val hoursForecast = forecastDay.hourly
     LazyRow() {
         if (hoursForecast == null) {
-
+            item { }
         } else {
-            items(hoursForecast) {
-                //hoursForecast[0].hour?.forEach { hour ->
-//                hoursForecast.forEach { hour ->
-                hoursForecast.forEachIndexed { index, hour ->
-                    Card(
-                        shape = RoundedCornerShape(15.dp),
-                        modifier = modifier.padding(end = 15.dp),
-                        backgroundColor = if (index == 0) MaterialTheme.colors.secondary else
-                            MaterialTheme.colors.surface,
-                        contentColor = MaterialTheme.colors.onSurface
+            itemsIndexed(hoursForecast) { index, hour ->
+                Card(
+                    shape = RoundedCornerShape(15.dp),
+                    modifier = modifier.padding(end = 15.dp),
+                    backgroundColor = if (index == 0) MaterialTheme.colors.secondary else
+                        MaterialTheme.colors.surface,
+                    contentColor = MaterialTheme.colors.onSurface
+                ) {
+                    Row(
+                        modifier = modifier.padding(horizontal = 18.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            modifier = modifier.padding(horizontal = 18.dp, vertical = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            //hour.condition?.icon?.let { iconUrl ->
-                            hour.weather[0].icon?.let { iconUrl ->
+                        //hour.condition?.icon?.let { iconUrl ->
+                        hour.weather[0].icon?.let { iconUrl ->
 
-                                //val painter = rememberImagePainter(data = "https:$iconUrl")
-                                val painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/$iconUrl@2x.png")
-                                Image(
-                                    painter = painter,
-                                    //painter = painterResource(id = R.drawable.weather),
-                                    contentDescription = null,
-                                    modifier = modifier.size(80.dp)
+                            //val painter = rememberImagePainter(data = "https:$iconUrl")
+                            val painter =
+                                rememberImagePainter(data = "https://openweathermap.org/img/wn/$iconUrl@2x.png")
+                            Image(
+                                painter = painter,
+                                contentDescription = null,
+                                modifier = modifier.size(80.dp)
+                            )
+                        }
+                        Spacer(modifier = modifier.padding(5.dp))
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            //hour.time?.let { timeEpoch ->
+                            hour.time?.let { timeEpoch ->
+                                val formatedTime = Instant.ofEpochSecond(timeEpoch)
+                                    .atZone(ZoneId.systemDefault()).toLocalTime()
+                                Text(
+                                    text = formatedTime.toString(),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
-                            Spacer(modifier = modifier.padding(5.dp))
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                //hour.time?.let { timeEpoch ->
-                                hour.time?.let { timeEpoch ->
-                                    val formatedTime = Instant.ofEpochSecond(timeEpoch)
-                                        .atZone(ZoneId.systemDefault()).toLocalTime()
+                            Spacer(modifier = modifier.padding(2.dp))
+                            //hour.temp?.let { temp ->
+                            hour.temperature?.let { temp ->
+                                Row() {
                                     Text(
-                                        text = formatedTime.toString(),
+                                        text = temp.toString(),
                                         style = MaterialTheme.typography.body1,
-                                        fontSize = 18.sp,
+                                        fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     )
-                                }
-                                Spacer(modifier = modifier.padding(2.dp))
-                                //hour.temp?.let { temp ->
-                                hour.temperature?.let { temp ->
-                                    Row() {
-                                        Text(
-                                            text = temp.toString(),
-                                            style = MaterialTheme.typography.body1,
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = "℃",
-                                            fontSize = 12.sp
-                                        )
-                                    }
+                                    Text(
+                                        text = "℃",
+                                        fontSize = 12.sp
+                                    )
                                 }
                             }
                         }
@@ -325,12 +325,18 @@ fun ToggleCards(
     onAirCondClicked: () -> Unit,
     modifier: Modifier
 ) {
-    val forecastBackground = if (forecastSelected) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
-    val airWindBackground = if (airWindSelected) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
-    val forecastCardShape = if (forecastSelected) RoundedCornerShape(12.dp) else RoundedCornerShape(0.dp)
-    val airWindCardShape = if (forecastSelected) RoundedCornerShape(12.dp) else RoundedCornerShape(0.dp)
-    val forecastTextColor = if (forecastSelected) MaterialTheme.colors.onBackground else SecondaryTextColor
-    val airWindTextColor = if (airWindSelected) MaterialTheme.colors.onBackground else SecondaryTextColor
+    val forecastBackground =
+        if (forecastSelected) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+    val airWindBackground =
+        if (airWindSelected) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+    val forecastCardShape =
+        if (forecastSelected) RoundedCornerShape(12.dp) else RoundedCornerShape(0.dp)
+    val airWindCardShape =
+        if (forecastSelected) RoundedCornerShape(12.dp) else RoundedCornerShape(0.dp)
+    val forecastTextColor =
+        if (forecastSelected) MaterialTheme.colors.onBackground else SecondaryTextColor
+    val airWindTextColor =
+        if (airWindSelected) MaterialTheme.colors.onBackground else SecondaryTextColor
     Card(
         modifier = modifier.clip(RoundedCornerShape(12.dp)),
     ) {
@@ -348,7 +354,7 @@ fun ToggleCards(
                         .padding(horizontal = 12.dp, vertical = 10.dp)
                         .padding(start = 12.dp, end = 12.dp)
                 )
-            } 
+            }
             CustomCard(
                 onClick = onAirCondClicked,
                 isCardSelected = if (isCardSelected) airWindSelected else forecastSelected,
@@ -371,14 +377,14 @@ fun ToggleCards(
 @Composable
 fun CustomCard(
     onClick: () -> Unit,
-   isCardSelected: Boolean,
-   background: Color,
-   contentColor: Color,
-   modifier: Modifier = Modifier,
-   shapes: Shape = RectangleShape,
-   border: BorderStroke? = null,
-   elevation: Dp = 1.dp,
-   content: @Composable () -> Unit
+    isCardSelected: Boolean,
+    background: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+    shapes: Shape = RectangleShape,
+    border: BorderStroke? = null,
+    elevation: Dp = 1.dp,
+    content: @Composable () -> Unit
 ) {
     Surface(
         onClick = onClick,

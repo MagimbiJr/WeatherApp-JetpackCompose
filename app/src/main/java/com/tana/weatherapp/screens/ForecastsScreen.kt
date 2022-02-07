@@ -39,7 +39,7 @@ fun ForecastsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (viewModel.loading) {
-            ScreenLoading(viewModel = viewModel,modifier = modifier)
+            ScreenLoading(viewModel = viewModel, modifier = modifier)
         } else {
             Text(
                 text = "Forecasts Report",
@@ -90,65 +90,67 @@ fun Forecasts(
         modifier = modifier.padding(bottom = 40.dp)
     ) {
         if (daysLists == null) {
-            item {  }
+            item { }
         } else {
-            items(daysLists) {
-                daysLists.forEach { day ->
-                    Card(
-                        modifier = modifier.padding(top = 8.dp,bottom = 8.dp),
-                        shape = RoundedCornerShape(15.dp)
+            items(daysLists) { day ->
+                Card(
+                    modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
+                    shape = RoundedCornerShape(15.dp)
+                ) {
+                    Row(
+                        modifier = modifier
+                            .padding(vertical = 18.dp, horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = modifier
-                                .padding(vertical = 18.dp, horizontal = 16.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column() {
-                                day.epochDate?.let { epochDate ->
-                                    val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
+                        Column() {
+                            day.epochDate?.let { epochDate ->
+                                val day =
+                                    Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
                                         .dayOfWeek.plus(1)
-                                    Text(
-                                        text = day.toString(),
-                                        style = MaterialTheme.typography.body1
-                                    )
-                                }
-                                Spacer(modifier = modifier.padding(3.dp))
-                                day.epochDate?.let { epochDate ->
-                                    val month = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
-                                        .month.name.slice(0..2)
-                                    val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault()).dayOfMonth.plus(1)
-                                    val date = "$month, $day"
-                                    Text(
-                                        text = date,
-                                        style = MaterialTheme.typography.body1,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        color = SecondaryTextColor
-                                    )
-                                }
-                            }
-                            Row() {
-                                day.temperature?.day?.let { maxTemp ->
-                                    Text(
-                                        text = maxTemp.toString(),
-                                        style = MaterialTheme.typography.h5,
-                                        fontSize = 25.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                                Text(text = "℃")
-                            }
-                            day.weather[0].icon?.let { icon ->
-//                                val painter = rememberImagePainter(data = "https:$icon")
-                                val painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/$icon@2x.png")
-                                Image(
-                                    painter = painter,
-                                    contentDescription = null,
-                                    modifier = modifier.size(50.dp)
+                                Text(
+                                    text = day.toString(),
+                                    style = MaterialTheme.typography.body1
                                 )
                             }
+                            Spacer(modifier = modifier.padding(3.dp))
+                            day.epochDate?.let { epochDate ->
+                                val month =
+                                    Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
+                                        .month.name.slice(0..2)
+                                val day = Instant.ofEpochSecond(epochDate)
+                                    .atZone(ZoneId.systemDefault()).dayOfMonth.plus(1)
+                                val date = "$month, $day"
+                                Text(
+                                    text = date,
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    color = SecondaryTextColor
+                                )
+                            }
+                        }
+                        Row() {
+                            day.temperature?.day?.let { maxTemp ->
+                                Text(
+                                    text = maxTemp.toString(),
+                                    style = MaterialTheme.typography.h5,
+                                    fontSize = 25.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            Text(text = "℃")
+                        }
+                        day.weather[0].icon?.let { icon ->
+//                                val painter = rememberImagePainter(data = "https:$icon")
+                            val painter =
+                                rememberImagePainter(data = "https://openweathermap.org/img/wn/$icon@2x.png")
+                            Image(
+                                painter = painter,
+                                contentDescription = null,
+                                modifier = modifier.size(50.dp)
+                            )
                         }
                     }
                 }
@@ -176,7 +178,7 @@ fun TodayForecast(
             color = SecondaryTextColor
         )
 //        currentDayForecast.forecast?.forecastDay?.get(0)?.date?.let { epochDate ->
-            currentDayForecast.daily[0]?.epochDate?.let { epochDate ->
+        currentDayForecast.daily[0]?.epochDate?.let { epochDate ->
             val month = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault())
                 .month.name.slice(0..2)
             val day = Instant.ofEpochSecond(epochDate).atZone(ZoneId.systemDefault()).dayOfMonth
