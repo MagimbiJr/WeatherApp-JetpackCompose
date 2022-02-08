@@ -11,3 +11,6 @@ It also shows the 7 days forecast of that location.
 This application is built using Jetpack Compose for UI.
 It uses data from [open weather api](https://openweathermap.org/api) 
 I use [this design](https://dribbble.com/shots/15736238-Weather-App-Design-Exploration) from dribbble
+
+
+![image](https://user-images.githubusercontent.com/39302798/153076604-d5550799-c3ac-40d3-a662-d7464ab8a59a.mp4)
