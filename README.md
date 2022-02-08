@@ -12,4 +12,4 @@ This application is built using Jetpack Compose for UI.
 It uses data from [open weather api](https://openweathermap.org/api) 
 I use [this design](https://dribbble.com/shots/15736238-Weather-App-Design-Exploration) from dribbble
 
-![screenshot_1](https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_1.mp4)
+![screenshot_1](https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_1.gif)
