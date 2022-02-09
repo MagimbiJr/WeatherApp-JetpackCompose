@@ -13,4 +13,8 @@ It uses data from [open weather api](https://openweathermap.org/api)
 I use [this design](https://dribbble.com/shots/15736238-Weather-App-Design-Exploration) from dribbble
 
 
-![Permission request](https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_1.gif=380x380)
+<img src="https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_1.gif" height="380" />
+
+<img src="https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_2.gif" height="380" />
+
+<img src="https://github.com/MagimbiJr/WeatherApp-JetpackCompose/blob/master/screenshot_3.gif" height="380" />
